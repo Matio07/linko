@@ -1,28 +1,30 @@
 #include "User.h"
 
+using namespace std;
+
 User::User() {}
 
-User::User(const std::string& username) : username(username) {}
+User::User(const string& username) : username(username) {}
 
-const std::string& User::getUsername() const { return username; }
+const string& User::getUsername() const { return username; }
 
-const std::string& User::getBio() const { return bio; }
-void User::setBio(const std::string& b) { bio = b; }
+const string& User::getBio() const { return bio; }
+void User::setBio(const string& b) { bio = b; }
 
-void User::setPassword(const std::string& p) { password = p; }
-const std::string& User::getPassword() const { return password; }
+void User::setPassword(const string& p) { password = p; }
+const string& User::getPassword() const { return password; }
 
-const std::vector<std::string>& User::getFollowers() const { return followers; }
-const std::vector<std::string>& User::getFollowing() const { return following; }
-const std::vector<std::string>& User::getBlocked() const { return blocked; }
-const std::vector<int>& User::getPosts() const { return posts; }
+const vector<string>& User::getFollowers() const { return followers; }
+const vector<string>& User::getFollowing() const { return following; }
+const vector<string>& User::getBlocked() const { return blocked; }
+const vector<int>& User::getPosts() const { return posts; }
 
-void User::addFollower(const std::string& u) { followers.push_back(u); }
-void User::addFollowing(const std::string& u) { following.push_back(u); }
+void User::addFollower(const string& u) { followers.push_back(u); }
+void User::addFollowing(const string& u) { following.push_back(u); }
 
-void User::blockUser(const std::string& u) { blocked.push_back(u); }
+void User::blockUser(const string& u) { blocked.push_back(u); }
 
-void User::unblockUser(const std::string& u) {
+void User::unblockUser(const string& u) {
     for (size_t i = 0; i < blocked.size(); i++) {
         if (blocked[i] == u) {
             blocked.erase(blocked.begin() + i);
@@ -33,14 +35,14 @@ void User::unblockUser(const std::string& u) {
 
 void User::addPost(int postId) { posts.push_back(postId); }
 
-bool User::isBlocked(const std::string& u) const {
+bool User::isBlocked(const string& u) const {
     for (const auto& b : blocked) {
         if (b == u) return true;
     }
     return false;
 }
 
-bool User::isFollowing(const std::string& u) const {
+bool User::isFollowing(const string& u) const {
     for (const auto& f : following) {
         if (f == u) return true;
     }
