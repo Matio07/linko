@@ -1,0 +1,24 @@
+# Linko (CLI)
+
+Linko ye simple social network project hast ke ba C++ neveshte shode.
+In version faghat console (CLI) hast.
+
+## Features
+- Register / Login / Logout
+- Create post
+- Edit post (only author mitune edit kone)
+- Follow users
+- Like and Comment
+- Search users
+- Block / Unblock
+- Save & Load data az file
+
+## Project Structure
+- core/ : logic asli system (User, Post, Network, FileManager, ...)
+- cli/  : command line interface
+
+## Description
+In project bar asas class ha design shode va har bakhsh masooliyat khodesh ro dare.
+User baraye modiriat karbaran,
+Post baraye modiriat post ha,
+Network baraye logic asli system.
