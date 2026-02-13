@@ -61,12 +61,14 @@ int Network::createPost(const string& username, const string& content) {
 
 bool Network::follow(const string& follower, const string& followee) {
     if (!userExists(follower) || !userExists(followee)) return false;
+    if (follower == followee) return false;
 
     User* f = getUser(follower);
     User* t = getUser(followee);
 
     if (!f || !t) return false;
 
+    if (f->isFollowing(followee)) return false;
     if (t->isBlocked(follower)) return false;
 
     f->addFollowing(followee);
