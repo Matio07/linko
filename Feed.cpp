@@ -14,6 +14,7 @@ vector<Post> Feed::generateFeed(const string& username) {
 
     for (const auto& pair : allPosts) {
         const Post& p = pair.second;
+
         if (u->isBlocked(p.getAuthor())) continue;
 
         if (p.getAuthor() == username) result.push_back(p);
