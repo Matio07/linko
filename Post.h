@@ -3,16 +3,15 @@
 
 #include <string>
 #include <vector>
-#include <ctime>
 #include "Comment.h"
 
 class Post {
 private:
-    int id{};
+    int id;
     std::string content;
     std::string author;
-    int likeCount{};
-    long postTime{};
+    int likeCount;
+    long postTime;
     std::vector<Comment> comments;
 
 public:
@@ -20,18 +19,20 @@ public:
     Post(int id, const std::string& content, const std::string& author);
 
     int getId() const;
-    const std::string& getContent() const;
-    const std::string& getAuthor() const;
+    std::string getContent() const;
+    std::string getAuthor() const;
+
     int getLikeCount() const;
     long getPostTime() const;
+
     const std::vector<Comment>& getComments() const;
 
+    void setContent(const std::string& c);
     void like();
-    void addComment(const Comment& comment);
 
-    void setContent(const std::string& newContent);
+    void addComment(const Comment& c);
 
-    void setLikeCount(int likes);
+    void setLikeCount(int c);
     void setPostTime(long t);
 };
 
