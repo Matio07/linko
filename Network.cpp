@@ -9,7 +9,6 @@ bool Network::userExists(const string& username) const {
 
 bool Network::addUser(const string& username, const string& password) {
     if (userExists(username)) return false;
-
     User u(username);
     u.setPassword(password);
     users[username] = u;
@@ -65,7 +64,6 @@ bool Network::follow(const string& follower, const string& followee) {
 
     User* f = getUser(follower);
     User* t = getUser(followee);
-
     if (!f || !t) return false;
 
     if (f->isFollowing(followee)) return false;
@@ -74,6 +72,18 @@ bool Network::follow(const string& follower, const string& followee) {
     f->addFollowing(followee);
     t->addFollower(follower);
     return true;
+}
+
+bool Network::unfollow(const string& follower, const string& followee) {
+    if (!userExists(follower) || !userExists(followee)) return false;
+
+    User* f = getUser(follower);
+    User* t = getUser(followee);
+    if (!f || !t) return false;
+
+    bool a = f->removeFollowing(followee);
+    bool b = t->removeFollower(follower);
+    return a || b;
 }
 
 bool Network::likePost(int postId) {
@@ -94,7 +104,6 @@ bool Network::editPost(int postId, const string& editorUsername, const string& n
     auto it = posts.find(postId);
     if (it == posts.end()) return false;
     if (it->second.getAuthor() != editorUsername) return false;
-
     it->second.setContent(newContent);
     return true;
 }
@@ -102,9 +111,7 @@ bool Network::editPost(int postId, const string& editorUsername, const string& n
 vector<string> Network::searchUser(const string& keyword) const {
     vector<string> results;
     for (const auto& pair : users) {
-        if (pair.first.find(keyword) != string::npos) {
-            results.push_back(pair.first);
-        }
+        if (pair.first.find(keyword) != string::npos) results.push_back(pair.first);
     }
     return results;
 }
