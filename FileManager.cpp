@@ -10,7 +10,7 @@ using namespace std;
 
 static string cleanText(string s) {
     for (size_t i = 0; i < s.size(); i++) {
-        if (s[i] == '|' || s[i] == ',' || s[i] == '\n' || s[i] == '\r') s[i] = ' ';
+        if (s[i] == '|'  s[i] == ','  s[i] == '\n' || s[i] == '\r') s[i] = ' ';
     }
     return s;
 }
@@ -31,78 +31,82 @@ static vector<string> splitByChar(const string& s, char delim) {
 }
 
 void FileManager::save(Network* network) {
-    filesystem::create_directories("data");
+    std::filesystem::create_directories("data");
 
     ofstream userFile("data/users.txt");
-    for (const auto& pair : network->getAllUsers()) {
-        const User& user = pair.second;
+    if (userFile.is_open()) {
+        for (const auto& pair : network->getAllUsers()) {
+            const User& user = pair.second;
 
-        userFile << user.getUsername() << "|"
-                 << user.getPassword() << "|"
-                 << cleanText(user.getBio()) << "|";
+            userFile << user.getUsername() << "|"
+                     << user.getPassword() << "|"
+                     << cleanText(user.getBio()) << "|";
 
-        const auto& followers = user.getFollowers();
-        for (size_t i = 0; i < followers.size(); i++) {
-            userFile << followers[i];
-            if (i + 1 < followers.size()) userFile << ",";
+            const auto& followers = user.getFollowers();
+            for (size_t i = 0; i < followers.size(); i++) {
+                userFile << followers[i];
+                if (i + 1 < followers.size()) userFile << ",";
+            }
+            userFile << "|";
+
+            const auto& following = user.getFollowing();
+            for (size_t i = 0; i < following.size(); i++) {
+                userFile << following[i];
+                if (i + 1 < following.size()) userFile << ",";
+            }
+            userFile << "|";
+
+            const auto& blocked = user.getBlocked();
+            for (size_t i = 0; i < blocked.size(); i++) {
+                userFile << blocked[i];
+                if (i + 1 < blocked.size()) userFile << ",";
+            }
+
+            userFile << "\n";
         }
-        userFile << "|";
-
-        const auto& following = user.getFollowing();
-        for (size_t i = 0; i < following.size(); i++) {
-            userFile << following[i];
-            if (i + 1 < following.size()) userFile << ",";
-        }
-        userFile << "|";
-
-        const auto& blocked = user.getBlocked();
-        for (size_t i = 0; i < blocked.size(); i++) {
-            userFile << blocked[i];
-            if (i + 1 < blocked.size()) userFile << ",";
-        }
-        userFile << "|";
-
-        const auto& posts = user.getPosts();
-        for (size_t i = 0; i < posts.size(); i++) {
-            userFile << posts[i];
-            if (i + 1 < posts.size()) userFile << ",";
-        }
-
-        userFile << "\n";
+        userFile.close();
     }
-    userFile.close();
 
     ofstream postFile("data/posts.txt");
-    for (const auto& pair : network->getAllPosts()) {
-        const Post& post = pair.second;
-        postFile << post.getId() << "|"
-                 << post.getAuthor() << "|"
-                 << cleanText(post.getContent()) << "|"
-                 << post.getLikeCount() << "|"
-                 << post.getPostTime() << "\n";
+    if (postFile.is_open()) {
+        for (const auto& pair : network->getAllPosts()) {
+            const Post& post = pair.second;
+
+            postFile << post.getId() << "|"
+                     << post.getAuthor() << "|"
+                     << cleanText(post.getContent()) << "|"
+                     << post.getLikeCount() << "|"
+                     << post.getPostTime() << "\n";
+        }
+        postFile.close();
     }
-    postFile.close();
 
     ofstream commentFile("data/comments.txt");
-    for (const auto& pair : network->getAllPosts()) {
-        const Post& post = pair.second;
-        for (const auto& c : post.getComments()) {
-            commentFile << post.getId() << "|"
-                        << c.getAuthor() << "|"
-                        << cleanText(c.getText()) << "\n";
+    if (commentFile.is_open()) {
+        for (const auto& pair : network->getAllPosts()) {
+            const Post& post = pair.second;
+
+            for (const auto& c : post.getComments()) {
+                commentFile << post.getId() << "|"
+                            << c.getAuthor() << "|"
+                            << cleanText(c.getText()) << "\n";
+            }
         }
+        commentFile.close();
     }
-    commentFile.close();
 }
 
 void FileManager::load(Network* network) {
+    std::filesystem::create_directories("data");
+
     ifstream userFile("data/users.txt");
     if (userFile.is_open()) {
         string line;
         while (getline(userFile, line)) {
             if (line.empty()) continue;
+
             auto parts = splitByChar(line, '|');
-            if (parts.size() < 7) continue;
+            if (parts.size() < 6) continue;
 
             string username = parts[0];
             string password = parts[1];
@@ -127,15 +131,6 @@ void FileManager::load(Network* network) {
                 for (const auto& b : blocked) u.blockUser(b);
             }
 
-            auto postIds = splitByChar(parts[6], ',');
-            if (!(postIds.size() == 1 && postIds[0] == "")) {
-                for (const auto& pid : postIds) {
-                    istringstream iss(pid);
-                    int id;
-                    if (iss >> id) u.addPost(id);
-                }
-            }
-
             network->addUserObject(u);
         }
         userFile.close();
@@ -145,8 +140,10 @@ void FileManager::load(Network* network) {
     if (postFile.is_open()) {
         string line;
         int maxId = 0;
+
         while (getline(postFile, line)) {
             if (line.empty()) continue;
+
             auto parts = splitByChar(line, '|');
             if (parts.size() < 5) continue;
 
@@ -167,6 +164,7 @@ void FileManager::load(Network* network) {
             network->addPostObject(p);
             if (id > maxId) maxId = id;
         }
+
         network->setNextPostId(maxId + 1);
         postFile.close();
     }
@@ -174,8 +172,10 @@ void FileManager::load(Network* network) {
     ifstream commentFile("data/comments.txt");
     if (commentFile.is_open()) {
         string line;
+
         while (getline(commentFile, line)) {
             if (line.empty()) continue;
+
             auto parts = splitByChar(line, '|');
             if (parts.size() < 3) continue;
 
@@ -187,6 +187,8 @@ void FileManager::load(Network* network) {
             Post* p = network->getPost(postId);
             if (p) p->addComment(Comment(author, text));
         }
+
         commentFile.close();
     }
 }
+
