@@ -4,7 +4,6 @@
 #include <map>
 #include <string>
 #include <vector>
-
 #include "User.h"
 #include "Post.h"
 
@@ -29,12 +28,15 @@ public:
 
     int createPost(const std::string& username, const std::string& content);
 
-    bool editPost(int postId, const std::string& editorUsername, const std::string& newContent);
-    std::vector<std::string> searchUser(const std::string& keyword) const;
-
     bool follow(const std::string& follower, const std::string& followee);
+    bool unfollow(const std::string& follower, const std::string& followee);
+
     bool likePost(int postId);
     bool commentPost(int postId, const std::string& author, const std::string& text);
+
+    bool editPost(int postId, const std::string& editorUsername, const std::string& newContent);
+
+    std::vector<std::string> searchUser(const std::string& keyword) const;
 
     const std::map<int, Post>& getAllPosts() const;
     const std::map<std::string, User>& getAllUsers() const;
