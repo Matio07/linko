@@ -10,6 +10,7 @@ private:
     std::string currentUser;
 
 public:
+    AuthManager();
     AuthManager(Network* network);
 
     bool registerUser(const std::string& username, const std::string& password);
@@ -17,7 +18,7 @@ public:
     void logout();
 
     bool isLoggedIn() const;
-    const std::string& getCurrentUser() const;
+    std::string getCurrentUser() const;
 };
 
 #endif
