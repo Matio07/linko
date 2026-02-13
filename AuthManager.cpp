@@ -1,22 +1,30 @@
 #include "AuthManager.h"
 using namespace std;
 
-AuthManager::AuthManager(Network* n) : network(n), currentUser("") {}
+AuthManager::AuthManager() : network(nullptr) {}
+
+AuthManager::AuthManager(Network* network) : network(network) {}
 
 bool AuthManager::registerUser(const string& username, const string& password) {
+    if (!network) return false;
     return network->addUser(username, password);
 }
 
 bool AuthManager::login(const string& username, const string& password) {
-    if (network->checkPassword(username, password)) {
-        currentUser = username;
-        return true;
-    }
-    return false;
+    if (!network) return false;
+    if (!network->checkPassword(username, password)) return false;
+    currentUser = username;
+    return true;
 }
 
-void AuthManager::logout() { currentUser = ""; }
+void AuthManager::logout() {
+    currentUser = "";
+}
 
-bool AuthManager::isLoggedIn() const { return currentUser != ""; }
+bool AuthManager::isLoggedIn() const {
+    return !currentUser.empty();
+}
 
-const string& AuthManager::getCurrentUser() const { return currentUser; }
+string AuthManager::getCurrentUser() const {
+    return currentUser;
+}
