@@ -12,8 +12,9 @@ public:
     Comment();
     Comment(const std::string& author, const std::string& text);
 
-    const std::string& getAuthor() const;
-    const std::string& getText() const;
+    std::string getAuthor() const;
+    std::string getText() const;
 };
 
 #endif
+
