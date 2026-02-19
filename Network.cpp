@@ -67,6 +67,8 @@ bool Network::follow(const string& follower, const string& followee) {
     if (!f || !t) return false;
 
     if (f->isFollowing(followee)) return false;
+
+    if (f->isBlocked(followee)) return false;
     if (t->isBlocked(follower)) return false;
 
     f->addFollowing(followee);
@@ -86,11 +88,13 @@ bool Network::unfollow(const string& follower, const string& followee) {
     return a || b;
 }
 
-bool Network::likePost(int postId) {
+bool Network::likePost(int postId, const string& likerUsername) {
+    if (!userExists(likerUsername)) return false;
+
     Post* p = getPost(postId);
     if (!p) return false;
-    p->like();
-    return true;
+
+    return p->likeBy(likerUsername);
 }
 
 bool Network::commentPost(int postId, const string& author, const string& text) {
@@ -111,7 +115,8 @@ bool Network::editPost(int postId, const string& editorUsername, const string& n
 vector<string> Network::searchUser(const string& keyword) const {
     vector<string> results;
     for (const auto& pair : users) {
-        if (pair.first.find(keyword) != string::npos) results.push_back(pair.first);
+        if (pair.first.find(keyword) != string::npos)
+            results.push_back(pair.first);
     }
     return results;
 }
@@ -124,7 +129,8 @@ int Network::getNextPostId() const { return nextPostId; }
 
 void Network::addPostObject(const Post& post) {
     posts[post.getId()] = post;
-    if (post.getId() >= nextPostId) nextPostId = post.getId() + 1;
+    if (post.getId() >= nextPostId)
+        nextPostId = post.getId() + 1;
 
     User* u = getUser(post.getAuthor());
     if (u) u->addPost(post.getId());
