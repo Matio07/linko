@@ -17,8 +17,12 @@ vector<Post> Feed::generateFeed(const string& username) {
 
         if (u->isBlocked(p.getAuthor())) continue;
 
-        if (p.getAuthor() == username) result.push_back(p);
-        else {
+        const User* authorUser = network->getUserConst(p.getAuthor());
+        if (authorUser && authorUser->isBlocked(username)) continue;
+
+        if (p.getAuthor() == username) {
+            result.push_back(p);
+        } else {
             for (const auto& f : following) {
                 if (p.getAuthor() == f) {
                     result.push_back(p);
