@@ -13,7 +13,7 @@ private:
     int likeCount;
     long postTime;
 
-    std::string likedBy; // format: ;user1;user2;
+    std::string likedBy; 
 
     std::vector<Comment> comments;
 
@@ -47,3 +47,4 @@ public:
 };
 
 #endif
+
