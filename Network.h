@@ -31,7 +31,8 @@ public:
     bool follow(const std::string& follower, const std::string& followee);
     bool unfollow(const std::string& follower, const std::string& followee);
 
-    bool likePost(int postId);
+    bool likePost(int postId, const std::string& likerUsername);
+
     bool commentPost(int postId, const std::string& author, const std::string& text);
 
     bool editPost(int postId, const std::string& editorUsername, const std::string& newContent);
